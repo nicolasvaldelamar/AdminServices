@@ -1,10 +1,11 @@
 import express from 'express';
-import { 
-  obtenerInforme, 
-  crearInforme, 
+import {
+  obtenerInforme,
+  crearInforme,
   actualizarInforme,
   listarInformesPorTecnico,
-  listarTodosInformes
+  listarTodosInformes,
+  descargarInformePDF
 } from '../controllers/informesController.js';
 import {
   listarReportesEquipos,
@@ -25,6 +26,7 @@ router.get('/tecnico/:tecnico_id', listarInformesPorTecnico);
 router.get('/servicio/:servicio_id', obtenerInforme);
 router.post('/servicio/:servicio_id', crearInforme);
 router.put('/servicio/:servicio_id', actualizarInforme);
+router.get('/servicio/:servicio_id/pdf', descargarInformePDF);
 
 router.get('/reportes-equipos', listarReportesEquipos);
 router.post('/reportes-equipos', crearReporteEquipos);

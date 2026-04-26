@@ -267,16 +267,15 @@ export default function Facturacion() {
                           <button
                             onClick={async () => {
                               try {
-                                const token = localStorage.getItem('token')
-                                const response = await fetch(`http://localhost:5001/api/facturacion/facturas/${factura.id}/pdf`, {
-                                  headers: { 'Authorization': `Bearer ${token}` }
+                                const response = await api.get(`/facturacion/facturas/${factura.id}/pdf`, {
+                                  responseType: 'blob'
                                 })
-                                const blob = await response.blob()
-                                const url = window.URL.createObjectURL(blob)
+                                const url = window.URL.createObjectURL(response.data)
                                 const a = document.createElement('a')
                                 a.href = url
                                 a.download = `factura-${factura.numero_factura}.pdf`
                                 a.click()
+                                window.URL.revokeObjectURL(url)
                               } catch (error) {
                                 alert('Error al descargar PDF')
                               }
@@ -367,16 +366,15 @@ export default function Facturacion() {
                           <button
                             onClick={async () => {
                               try {
-                                const token = localStorage.getItem('token')
-                                const response = await fetch(`http://localhost:5001/api/facturacion/cotizaciones/${cotizacion.id}/pdf`, {
-                                  headers: { 'Authorization': `Bearer ${token}` }
+                                const response = await api.get(`/facturacion/cotizaciones/${cotizacion.id}/pdf`, {
+                                  responseType: 'blob'
                                 })
-                                const blob = await response.blob()
-                                const url = window.URL.createObjectURL(blob)
+                                const url = window.URL.createObjectURL(response.data)
                                 const a = document.createElement('a')
                                 a.href = url
                                 a.download = `cotizacion-${cotizacion.numero_cotizacion}.pdf`
                                 a.click()
+                                window.URL.revokeObjectURL(url)
                               } catch (error) {
                                 alert('Error al descargar PDF')
                               }

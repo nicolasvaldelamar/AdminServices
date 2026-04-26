@@ -7,8 +7,8 @@ import { generarFacturaPDF, generarCotizacionPDF } from '../utils/pdfGenerator.j
 
 export const listarFacturas = async (req, res) => {
   try {
-    const { estado, cliente_id } = req.query;
-    
+    const { estado, cliente_id, fecha_inicio, fecha_fin } = req.query;
+
     let query = `
       SELECT f.*, c.nombre as cliente_nombre, c.telefono as cliente_telefono,
              u.nombre as creador_nombre
@@ -17,21 +17,31 @@ export const listarFacturas = async (req, res) => {
       LEFT JOIN usuarios u ON f.creada_por = u.id
       WHERE 1=1
     `;
-    
+
     const params = [];
-    
+
     if (estado) {
       params.push(estado);
       query += ` AND f.estado = $${params.length}`;
     }
-    
+
     if (cliente_id) {
       params.push(cliente_id);
       query += ` AND f.cliente_id = $${params.length}`;
     }
-    
+
+    if (fecha_inicio) {
+      params.push(fecha_inicio);
+      query += ` AND f.fecha_emision >= $${params.length}`;
+    }
+
+    if (fecha_fin) {
+      params.push(fecha_fin);
+      query += ` AND f.fecha_emision <= $${params.length}`;
+    }
+
     query += ' ORDER BY f.fecha_emision DESC';
-    
+
     const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (error) {
@@ -168,8 +178,8 @@ export const actualizarEstadoFactura = async (req, res) => {
 
 export const listarCotizaciones = async (req, res) => {
   try {
-    const { estado, cliente_id } = req.query;
-    
+    const { estado, cliente_id, fecha_inicio, fecha_fin } = req.query;
+
     let query = `
       SELECT c.*, cl.nombre as cliente_nombre, cl.telefono as cliente_telefono,
              u.nombre as creador_nombre
@@ -178,21 +188,31 @@ export const listarCotizaciones = async (req, res) => {
       LEFT JOIN usuarios u ON c.creada_por = u.id
       WHERE 1=1
     `;
-    
+
     const params = [];
-    
+
     if (estado) {
       params.push(estado);
       query += ` AND c.estado = $${params.length}`;
     }
-    
+
     if (cliente_id) {
       params.push(cliente_id);
       query += ` AND c.cliente_id = $${params.length}`;
     }
-    
+
+    if (fecha_inicio) {
+      params.push(fecha_inicio);
+      query += ` AND c.fecha_emision >= $${params.length}`;
+    }
+
+    if (fecha_fin) {
+      params.push(fecha_fin);
+      query += ` AND c.fecha_emision <= $${params.length}`;
+    }
+
     query += ' ORDER BY c.fecha_emision DESC';
-    
+
     const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (error) {
@@ -301,18 +321,12 @@ export const actualizarEstadoCotizacion = async (req, res) => {
       return res.status(400).json({ error: 'Estado inválido' });
     }
     
-    const updates = {estado};
-    if (estado === 'aprobada') {
-      updates.fecha_aprobacion = 'CURRENT_TIMESTAMP';
-      updates.aprobada_por = aprobada_por;
-    }
-    
     const result = await pool.query(
-      `UPDATE cotizaciones 
-       SET estado = $1, 
-           fecha_aprobacion = ${estado === 'aprobada' ? 'CURRENT_TIMESTAMP' : 'fecha_aprobacion'},
-           aprobada_por = $2
-       WHERE id = $3 
+      `UPDATE cotizaciones
+       SET estado = $1,
+           fecha_aprobacion = CASE WHEN $1 = 'aprobada' THEN CURRENT_TIMESTAMP ELSE fecha_aprobacion END,
+           aprobada_por = COALESCE($2, aprobada_por)
+       WHERE id = $3
        RETURNING *`,
       [estado, aprobada_por || null, id]
     );

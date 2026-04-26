@@ -70,21 +70,23 @@ export default function Dashboard() {
       
       {/* Tarjetas de estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Link to="/app/servicios/por-asignar" className="stat-card group relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-orange-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <div className="relative flex items-center justify-between">
-            <div className="flex-1">
-              <p className="text-sm text-slate-600 font-medium mb-1">Por Asignar</p>
-              <p className="text-4xl font-bold text-orange-600 mb-2 tracking-tight">
-                {estadisticas?.por_estado?.find(e => e.estado === 'por_asignar')?.cantidad || 0}
-              </p>
-              <p className="text-xs text-slate-500 font-medium">Requieren atención</p>
+        {usuario?.rol !== 'tecnico' && (
+          <Link to="/app/servicios/por-asignar" className="stat-card group relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-orange-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="relative flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-sm text-slate-600 font-medium mb-1">Por Asignar</p>
+                <p className="text-4xl font-bold text-orange-600 mb-2 tracking-tight">
+                  {estadisticas?.por_estado?.find(e => e.estado === 'por_asignar')?.cantidad || 0}
+                </p>
+                <p className="text-xs text-slate-500 font-medium">Requieren atención</p>
+              </div>
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30">
+                <Clock className="text-white" size={28} />
+              </div>
             </div>
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30">
-              <Clock className="text-white" size={28} />
-            </div>
-          </div>
-        </Link>
+          </Link>
+        )}
         
         <div className="stat-card group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

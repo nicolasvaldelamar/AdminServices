@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Save, FileText } from 'lucide-react'
+import { ArrowLeft, Save, FileText, Download } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { useAuth } from '../context/AuthContext'
 import api from '../services/api'
@@ -46,7 +46,7 @@ export default function InformeTecnico() {
   const onSubmit = async (data) => {
     setGuardando(true)
     setError('')
-    
+
     try {
       if (informe) {
         await api.put(`/informes/servicio/${id}`, data)
@@ -58,6 +58,22 @@ export default function InformeTecnico() {
       setError(error.response?.data?.error || 'Error al guardar informe')
     } finally {
       setGuardando(false)
+    }
+  }
+
+  const descargarPDF = async () => {
+    try {
+      const response = await api.get(`/informes/servicio/${id}/pdf`, {
+        responseType: 'blob'
+      })
+      const url = window.URL.createObjectURL(response.data)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `informe-${servicio?.codigo || id}.pdf`
+      a.click()
+      window.URL.revokeObjectURL(url)
+    } catch (err) {
+      setError('Error al descargar PDF del informe')
     }
   }
   
@@ -88,16 +104,29 @@ export default function InformeTecnico() {
       </Link>
       
       <div className="card">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
-            <FileText className="text-primary-600" size={24} />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center shrink-0">
+              <FileText className="text-primary-600" size={24} />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold text-gray-900 truncate">
+                {informe ? 'Editar Informe Técnico' : 'Crear Informe Técnico'}
+              </h1>
+              <p className="text-gray-600 truncate">{servicio.codigo} - {servicio.cliente_nombre}</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              {informe ? 'Editar Informe Técnico' : 'Crear Informe Técnico'}
-            </h1>
-            <p className="text-gray-600">{servicio.codigo} - {servicio.cliente_nombre}</p>
-          </div>
+          {informe && (
+            <button
+              type="button"
+              onClick={descargarPDF}
+              className="btn-secondary inline-flex items-center gap-2 shrink-0"
+              title="Descargar PDF"
+            >
+              <Download size={18} />
+              Descargar PDF
+            </button>
+          )}
         </div>
         
         {error && (

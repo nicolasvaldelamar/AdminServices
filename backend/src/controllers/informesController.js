@@ -1,4 +1,5 @@
 import pool from '../config/database.js';
+import { generarInformePDF } from '../utils/pdfGenerator.js';
 
 export const obtenerInforme = async (req, res) => {
   try {
@@ -238,6 +239,59 @@ export const listarInformesPorTecnico = async (req, res) => {
     res.status(500).json({ 
       error: 'Error al listar informes' 
     });
+  }
+};
+
+export const descargarInformePDF = async (req, res) => {
+  try {
+    const { servicio_id } = req.params;
+
+    let query = `
+      SELECT
+        it.*,
+        u.nombre AS tecnico_nombre,
+        s.codigo AS servicio_codigo,
+        s.tipo_servicio,
+        s.equipo_marca,
+        s.equipo_modelo,
+        s.equipo_serial,
+        s.falla_reportada,
+        c.nombre AS cliente_nombre,
+        c.telefono AS cliente_telefono,
+        c.email AS cliente_email
+      FROM informes_tecnicos it
+      LEFT JOIN servicios s ON it.servicio_id = s.id
+      LEFT JOIN clientes c ON s.cliente_id = c.id
+      LEFT JOIN usuarios u ON it.tecnico_id = u.id
+      WHERE it.servicio_id = $1
+    `;
+    const params = [servicio_id];
+
+    if (req.usuario.rol === 'tecnico') {
+      query += ' AND it.tecnico_id = $2';
+      params.push(req.usuario.id);
+    }
+
+    const result = await pool.query(query, params);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        error: 'Informe no encontrado o no tiene acceso'
+      });
+    }
+
+    const informe = result.rows[0];
+    const pdfBuffer = await generarInformePDF(informe);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="informe-${informe.servicio_codigo || informe.id}.pdf"`
+    );
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error('Error generando PDF de informe:', error);
+    res.status(500).json({ error: 'Error al generar PDF del informe' });
   }
 };
 

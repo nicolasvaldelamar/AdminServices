@@ -326,10 +326,30 @@ export default function ReportesTecnicos() {
                         {rep.creado_en ? formatearFechaHora(rep.creado_en) : '—'}
                       </td>
                       <td className="px-4 py-3 text-sm">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                           <Link to={`/app/servicios/${rep.servicio_id}/informe`} className="text-primary-600 hover:text-primary-700 text-xs font-semibold">
                             Ver / editar
                           </Link>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              try {
+                                const res = await api.get(`/informes/servicio/${rep.servicio_id}/pdf`, { responseType: 'blob' })
+                                const url = window.URL.createObjectURL(res.data)
+                                const a = document.createElement('a')
+                                a.href = url
+                                a.download = `informe-${rep.servicio_codigo || rep.servicio_id}.pdf`
+                                a.click()
+                                window.URL.revokeObjectURL(url)
+                              } catch {
+                                alert('Error al descargar PDF')
+                              }
+                            }}
+                            className="text-emerald-600 hover:text-emerald-700 text-xs font-semibold inline-flex items-center gap-1"
+                            title="Descargar PDF"
+                          >
+                            <Download size={14} /> PDF
+                          </button>
                           <Link to={`/app/servicios/${rep.servicio_id}`} className="text-gray-500 hover:text-gray-700 text-xs">
                             Ver servicio
                           </Link>
