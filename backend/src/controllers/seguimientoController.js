@@ -69,12 +69,13 @@ export const consultarServicio = async (req, res) => {
     
     // Calcular progreso (porcentaje basado en estado)
     const estadosProgreso = {
-      'recibido': 10,
-      'en_diagnostico': 25,
-      'cotizado': 40,
-      'aprobado': 50,
-      'en_reparacion': 70,
-      'listo': 85,
+      'por_asignar': 5,
+      'recibido': 15,
+      'en_diagnostico': 30,
+      'cotizado': 45,
+      'aprobado': 55,
+      'en_reparacion': 75,
+      'listo': 90,
       'entregado': 95,
       'facturado': 100,
       'cerrado': 100

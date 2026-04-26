@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes grid-fade {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.4; }
+}
+
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+}
+
+.text-gradient-primary {
+  background: linear-gradient(120deg, #7dd3fc 0%, #ffffff 35%, #bae6fd 70%, #7dd3fc 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 8s linear infinite;
+}
+
 @layer base {
   * {
     @apply antialiased;
