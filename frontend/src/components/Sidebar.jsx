@@ -1,19 +1,19 @@
 import { NavLink } from 'react-router-dom'
-import { 
-  LayoutDashboard, 
-  Users, 
-  Wrench, 
-  FileText, 
-  Settings,
+import {
+  LayoutDashboard,
+  Users,
+  Wrench,
+  FileText,
   UserCog,
   Calendar,
-  DollarSign
+  DollarSign,
+  X
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen = false, onClose = () => {} }) {
   const { usuario } = useAuth()
-  
+
   const menuItems = [
     {
       label: 'Dashboard',
@@ -58,24 +58,34 @@ export default function Sidebar() {
       roles: ['administrador']
     }
   ]
-  
-  const menuItemsFiltrados = menuItems.filter(item => 
+
+  const menuItemsFiltrados = menuItems.filter(item =>
     item.roles.includes(usuario?.rol)
   )
-  
+
   return (
-    <aside className="w-72 gradient-bg text-white flex flex-col border-r border-slate-800/50 backdrop-blur-xl">
-      {/* Solo logo ocupando todo el encabezado */}
-      <div className="border-b border-white/10 flex items-center justify-center py-3">
-        <img 
-          src="/logo-blanco.png" 
-          alt="Arnol Caicedo" 
-          className="w-40 h-auto object-contain"
+    <aside
+      className={`fixed lg:static inset-y-0 left-0 z-50 w-72 gradient-bg text-white flex flex-col border-r border-slate-800/50 backdrop-blur-xl transform transition-transform duration-300 ease-in-out ${
+        isOpen ? 'translate-x-0' : '-translate-x-full'
+      } lg:translate-x-0`}
+    >
+      <div className="border-b border-white/10 flex items-center justify-between py-3 px-4 lg:justify-center lg:px-0">
+        <img
+          src="/logo-blanco.png"
+          alt="Arnol Caicedo"
+          className="w-32 sm:w-40 h-auto object-contain"
         />
+        <button
+          type="button"
+          onClick={onClose}
+          className="lg:hidden p-2 -mr-1 text-slate-300 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+          aria-label="Cerrar menú"
+        >
+          <X size={22} />
+        </button>
       </div>
-      
-      {/* Menú */}
-      <nav className="flex-1 p-4">
+
+      <nav className="flex-1 p-4 overflow-y-auto">
         <ul className="space-y-1.5">
           {menuItemsFiltrados.map((item) => {
             const Icon = item.icon
@@ -100,8 +110,7 @@ export default function Sidebar() {
           })}
         </ul>
       </nav>
-      
-      {/* Footer */}
+
       <div className="p-4 border-t border-white/10">
         <p className="text-xs text-slate-400 text-center font-light">
           © 2026 Arnol Caicedo

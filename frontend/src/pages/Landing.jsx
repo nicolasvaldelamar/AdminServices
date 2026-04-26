@@ -443,7 +443,7 @@ export default function Landing() {
                   sea transparente y profesional.
                 </p>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-slate-900/80 border border-slate-700/70 rounded-2xl p-4 text-center">
                   <p className="text-2xl font-bold text-primary-300 mb-1">24/7</p>
                   <p className="text-xs text-primary-100">

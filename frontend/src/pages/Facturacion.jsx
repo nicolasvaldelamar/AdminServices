@@ -83,13 +83,13 @@ export default function Facturacion() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900 tracking-tight mb-2 flex items-center gap-3">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight mb-2 flex items-center gap-3">
             <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
               <DollarSign size={24} className="text-white" />
             </div>
             Facturación
           </h1>
-          <p className="text-slate-600 font-light text-lg ml-16">
+          <p className="text-slate-600 font-light text-sm sm:text-base lg:text-lg ml-16">
             Gestión de facturas y cotizaciones
           </p>
         </div>

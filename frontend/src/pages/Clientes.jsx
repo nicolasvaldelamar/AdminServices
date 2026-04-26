@@ -52,8 +52,8 @@ export default function Clientes() {
       {/* Encabezado */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900 tracking-tight mb-2">Clientes</h1>
-          <p className="text-slate-600 font-light text-lg">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight mb-2">Clientes</h1>
+          <p className="text-slate-600 font-light text-sm sm:text-base lg:text-lg">
             Gestión de clientes y contactos
           </p>
         </div>

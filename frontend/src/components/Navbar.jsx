@@ -1,37 +1,60 @@
-import { Menu, Bell, User } from 'lucide-react'
+import { Menu, Bell } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-export default function Navbar() {
+export default function Navbar({ onMenuClick = () => {} }) {
   const { usuario, logout } = useAuth()
   const [menuAbierto, setMenuAbierto] = useState(false)
-  
+  const menuRef = useRef(null)
+
+  useEffect(() => {
+    if (!menuAbierto) return
+    const onClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuAbierto(false)
+      }
+    }
+    document.addEventListener('mousedown', onClick)
+    return () => document.removeEventListener('mousedown', onClick)
+  }, [menuAbierto])
+
   return (
-    <nav className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-6 py-4 sticky top-0 z-40">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button className="lg:hidden text-slate-600 hover:text-slate-900">
-            <Menu size={24} />
+    <nav className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-30">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+          <button
+            type="button"
+            onClick={onMenuClick}
+            className="lg:hidden p-2 -ml-1 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 transition-colors"
+            aria-label="Abrir menú"
+          >
+            <Menu size={22} />
           </button>
-          <h1 className="text-xl font-semibold text-slate-900 tracking-tight">
-            Sistema de Gestión de Servicios
+          <h1 className="text-base sm:text-lg md:text-xl font-semibold text-slate-900 tracking-tight truncate">
+            <span className="hidden sm:inline">Sistema de Gestión de Servicios</span>
+            <span className="sm:hidden">AdminServices</span>
           </h1>
         </div>
-        
-        <div className="flex items-center gap-3">
-          {/* Notificaciones */}
-          <button className="p-2.5 hover:bg-slate-100/80 rounded-xl relative transition-colors duration-200">
+
+        <div className="flex items-center gap-1 sm:gap-3 shrink-0">
+          <button
+            type="button"
+            className="p-2 sm:p-2.5 hover:bg-slate-100/80 rounded-xl relative transition-colors duration-200"
+            aria-label="Notificaciones"
+          >
             <Bell size={20} className="text-slate-600" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
           </button>
-          
-          {/* Menú de usuario */}
-          <div className="relative">
+
+          <div className="relative" ref={menuRef}>
             <button
+              type="button"
               onClick={() => setMenuAbierto(!menuAbierto)}
-              className="flex items-center gap-3 p-2 pr-4 hover:bg-slate-100/80 rounded-xl transition-all duration-200"
+              className="flex items-center gap-2 sm:gap-3 p-1.5 sm:p-2 sm:pr-4 hover:bg-slate-100/80 rounded-xl transition-all duration-200"
+              aria-haspopup="menu"
+              aria-expanded={menuAbierto}
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center text-white font-semibold shadow-lg shadow-primary-500/30">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center text-white font-semibold shadow-lg shadow-primary-500/30">
                 {usuario?.nombre?.charAt(0).toUpperCase()}
               </div>
               <div className="hidden md:block text-left">
@@ -39,9 +62,13 @@ export default function Navbar() {
                 <p className="text-xs text-slate-500 capitalize font-medium">{usuario?.rol}</p>
               </div>
             </button>
-            
+
             {menuAbierto && (
               <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200/60 py-2 z-50 backdrop-blur-xl">
+                <div className="md:hidden px-4 py-2 border-b border-slate-100 mb-1">
+                  <p className="text-sm font-semibold text-slate-900 truncate">{usuario?.nombre}</p>
+                  <p className="text-xs text-slate-500 capitalize">{usuario?.rol}</p>
+                </div>
                 <a
                   href="/app/perfil"
                   className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors duration-200 font-medium"

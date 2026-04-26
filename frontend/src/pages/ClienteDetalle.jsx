@@ -190,7 +190,7 @@ export default function ClienteDetalle() {
         {/* Estadísticas */}
         <div className="card">
           <h2 className="text-lg font-semibold mb-4">Estadísticas</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-blue-50 rounded-lg p-4">
               <p className="text-sm text-gray-600">Total Servicios</p>
               <p className="text-2xl font-bold text-blue-600 mt-1">

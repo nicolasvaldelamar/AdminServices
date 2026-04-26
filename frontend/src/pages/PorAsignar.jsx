@@ -58,13 +58,13 @@ export default function PorAsignar() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900 tracking-tight mb-2 flex items-center gap-3">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight mb-2 flex items-center gap-3">
             <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30">
               <Clock size={24} className="text-white" />
             </div>
             Servicios Por Asignar
           </h1>
-          <p className="text-slate-600 font-light text-lg ml-16">
+          <p className="text-slate-600 font-light text-sm sm:text-base lg:text-lg ml-16">
             Solicitudes pendientes de asignación de técnico
           </p>
         </div>

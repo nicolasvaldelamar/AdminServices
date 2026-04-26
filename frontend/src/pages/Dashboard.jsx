@@ -52,10 +52,10 @@ export default function Dashboard() {
       {/* Encabezado */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900 tracking-tight mb-2">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight mb-2">
             Bienvenido, {usuario?.nombre}
           </h1>
-          <p className="text-slate-600 font-light text-lg">
+          <p className="text-slate-600 font-light text-sm sm:text-base lg:text-lg">
             Resumen de actividad del sistema
           </p>
         </div>

@@ -224,7 +224,7 @@ export default function SolicitudPublica() {
                 ¿Qué necesitas?
               </h3>
               
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <label className={`cursor-pointer border-2 rounded-lg p-4 text-center transition-all ${watch('tipo_solicitud') === 'servicio' ? 'border-primary-500 shadow-sm' : 'border-gray-200 hover:border-primary-300'}`}>
                   <input
                     type="radio"
@@ -261,7 +261,7 @@ export default function SolicitudPublica() {
                 ¿Dónde prefieres el servicio?
               </h3>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <label className={`cursor-pointer border-2 rounded-lg p-4 text-center transition-all ${
                   tipoServicio === 'taller' 
                     ? 'border-primary-600 bg-primary-50' 
