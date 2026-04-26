@@ -83,7 +83,7 @@ export default function ServicioForm() {
   
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <Link to={id ? `/servicios/${id}` : '/servicios'} className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900">
+      <Link to={id ? `/app/servicios/${id}` : '/app/servicios'} className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900">
         <ArrowLeft size={20} />
         Volver
       </Link>
@@ -255,7 +255,7 @@ export default function ServicioForm() {
             </button>
             
             <Link
-              to={id ? `/servicios/${id}` : '/servicios'}
+              to={id ? `/app/servicios/${id}` : '/app/servicios'}
               className="btn-secondary"
             >
               Cancelar

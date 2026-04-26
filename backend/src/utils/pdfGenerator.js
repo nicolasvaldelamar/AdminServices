@@ -118,66 +118,83 @@ const PAGE = {
 const CONTENT_W = PAGE.width - PAGE.marginX * 2;
 
 /**
- * Header con banda azul a la izquierda, logo, datos empresa y bloque de tipo de documento
+ * Header limpio con logo en aspect ratio correcto, datos empresa
+ * y bloque de tipo de documento. Devuelve la y siguiente.
  */
 function drawHeader(doc, { tipoDoc, numero, fecha, fechaLabel = 'Fecha de emisión', estadoBadge }) {
   const top = PAGE.marginTop;
-  const headerH = 90;
+  const headerH = 92;
+  const right = PAGE.width - PAGE.marginX;
 
-  // Banda decorativa izquierda
-  doc.rect(0, top, 6, headerH).fill(COLORS.primary);
-
+  // === Bloque de empresa (izquierda) ===
   const logoPath = findLogoPath();
+  const logoW = 130;
+  const logoH = 60;
   let textX = PAGE.marginX;
 
   if (logoPath) {
     try {
-      doc.image(logoPath, PAGE.marginX, top, { width: 70, height: 70 });
-      textX = PAGE.marginX + 85;
+      // fit mantiene el aspect ratio dentro del rectángulo
+      doc.image(logoPath, PAGE.marginX, top + 4, { fit: [logoW, logoH], align: 'left', valign: 'top' });
+      textX = PAGE.marginX + logoW + 14;
     } catch {
       textX = PAGE.marginX;
     }
   }
 
-  // Empresa (izquierda)
-  doc.font(FONT.bold).fontSize(15).fillColor(COLORS.ink)
-     .text(EMPRESA.nombre, textX, top + 4, { width: 280 });
-  doc.font(FONT.regular).fontSize(9).fillColor(COLORS.muted)
-     .text(EMPRESA.slogan, textX, top + 24, { width: 280 });
-  doc.font(FONT.regular).fontSize(8).fillColor(COLORS.text)
-     .text(EMPRESA.cc, textX, top + 40)
-     .text(EMPRESA.direccion + ' · ' + EMPRESA.ciudad, textX, top + 52, { width: 280 })
-     .text(EMPRESA.telefono + ' · ' + EMPRESA.email, textX, top + 64, { width: 280 });
+  doc.font(FONT.bold).fontSize(14).fillColor(COLORS.ink)
+     .text(EMPRESA.nombre, textX, top + 6, { width: 230 });
+  doc.font(FONT.oblique).fontSize(8.5).fillColor(COLORS.muted)
+     .text(EMPRESA.slogan, textX, top + 24, { width: 230 });
+  doc.font(FONT.regular).fontSize(7.5).fillColor(COLORS.text)
+     .text(EMPRESA.cc, textX, top + 42)
+     .text(EMPRESA.direccion + ' · ' + EMPRESA.ciudad, textX, top + 53, { width: 230 })
+     .text(EMPRESA.telefono + '  ·  ' + EMPRESA.email, textX, top + 64, { width: 230 });
 
-  // Bloque tipo de documento (derecha)
-  const boxW = 180;
-  const boxX = PAGE.width - PAGE.marginX - boxW;
+  // === Bloque tipo de documento (derecha) ===
+  const boxW = 175;
+  const boxX = right - boxW;
   const boxY = top;
+  const labelStripH = 32;
 
-  doc.roundedRect(boxX, boxY, boxW, headerH, 6).fill(COLORS.primary);
+  // Tarjeta principal
+  doc.roundedRect(boxX, boxY, boxW, headerH, 8).fill(COLORS.primary);
+  // Tira oscura superior con el tipo de documento
+  doc.path(`M ${boxX + 8} ${boxY} H ${boxX + boxW - 8} A 8 8 0 0 1 ${boxX + boxW} ${boxY + 8} V ${boxY + labelStripH} H ${boxX} V ${boxY + 8} A 8 8 0 0 1 ${boxX + 8} ${boxY}`)
+     .fill(COLORS.primaryDk);
 
-  doc.font(FONT.bold).fontSize(18).fillColor(COLORS.white)
-     .text(tipoDoc, boxX, boxY + 12, { width: boxW, align: 'center' });
+  doc.font(FONT.bold).fontSize(17).fillColor(COLORS.white)
+     .text(tipoDoc, boxX, boxY + 10, { width: boxW, align: 'center', characterSpacing: 1.5 });
 
-  doc.font(FONT.regular).fontSize(8).fillColor('#bfdbfe')
-     .text('Número', boxX, boxY + 38, { width: boxW, align: 'center' });
+  // Cuerpo: número y fecha alineados
+  const innerY = boxY + labelStripH + 6;
+  doc.font(FONT.regular).fontSize(7).fillColor('#bfdbfe')
+     .text('NÚMERO', boxX, innerY, { width: boxW, align: 'center', characterSpacing: 1 });
   doc.font(FONT.bold).fontSize(13).fillColor(COLORS.white)
-     .text(numero || '—', boxX, boxY + 50, { width: boxW, align: 'center' });
+     .text(numero || '—', boxX, innerY + 9, { width: boxW, align: 'center' });
 
   doc.font(FONT.regular).fontSize(7).fillColor('#bfdbfe')
-     .text(fechaLabel, boxX, boxY + 70, { width: boxW, align: 'center' });
-  doc.font(FONT.bold).fontSize(9).fillColor(COLORS.white)
-     .text(formatearFechaCorta(fecha), boxX, boxY + 79, { width: boxW, align: 'center' });
+     .text(fechaLabel.toUpperCase(), boxX, innerY + 30, { width: boxW, align: 'center', characterSpacing: 1 });
+  doc.font(FONT.bold).fontSize(10).fillColor(COLORS.white)
+     .text(formatearFechaCorta(fecha), boxX, innerY + 39, { width: boxW, align: 'center' });
 
+  // Badge de estado, debajo de la tarjeta del documento
+  let bottomY = top + headerH;
   if (estadoBadge) {
-    const badgeY = boxY + headerH + 6;
+    const badgeY = bottomY + 8;
     const badgeColor = estadoBadge.color || COLORS.muted;
-    doc.roundedRect(boxX, badgeY, boxW, 18, 9).fill(badgeColor);
+    doc.roundedRect(boxX, badgeY, boxW, 20, 10).fill(badgeColor);
     doc.font(FONT.bold).fontSize(9).fillColor(COLORS.white)
-       .text(estadoBadge.label.toUpperCase(), boxX, badgeY + 5, { width: boxW, align: 'center' });
+       .text(estadoBadge.label.toUpperCase(), boxX, badgeY + 6, { width: boxW, align: 'center', characterSpacing: 1 });
+    bottomY = badgeY + 20;
   }
 
-  return top + headerH + (estadoBadge ? 30 : 16);
+  // Línea separadora sutil entre header y contenido
+  const sepY = bottomY + 14;
+  doc.strokeColor(COLORS.line).lineWidth(0.7)
+     .moveTo(PAGE.marginX, sepY).lineTo(right, sepY).stroke();
+
+  return sepY + 16;
 }
 
 /**

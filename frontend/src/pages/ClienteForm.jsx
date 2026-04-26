@@ -51,7 +51,7 @@ export default function ClienteForm() {
   
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <Link to={id ? `/clientes/${id}` : '/clientes'} className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900">
+      <Link to={id ? `/app/clientes/${id}` : '/app/clientes'} className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900">
         <ArrowLeft size={20} />
         Volver
       </Link>
@@ -194,7 +194,7 @@ export default function ClienteForm() {
             </button>
             
             <Link
-              to={id ? `/clientes/${id}` : '/clientes'}
+              to={id ? `/app/clientes/${id}` : '/app/clientes'}
               className="btn-secondary"
             >
               Cancelar
