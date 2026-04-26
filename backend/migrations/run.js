@@ -15,7 +15,8 @@ async function runMigrations() {
       '01_initial_schema.sql',
       '02_mejoras_solicitudes.sql',
       '03_add_categoria_servicio.sql',
-      '03_reportes_equipos.sql'
+      '03_reportes_equipos.sql',
+      '04_fix_v_servicios_completos.sql'
     ];
 
     for (const file of migrations) {

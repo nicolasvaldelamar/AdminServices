@@ -438,67 +438,77 @@ export const facturarServicio = async (req, res) => {
 
 export const obtenerEstadisticas = async (req, res) => {
   try {
-    // Total de servicios
+    const esTecnico = req.usuario.rol === 'tecnico';
+    const filtroTecnico = esTecnico ? 'WHERE tecnico_asignado_id = $1' : '';
+    const params = esTecnico ? [req.usuario.id] : [];
+
     const totalResult = await pool.query(
-      'SELECT COUNT(*) as total FROM servicios'
+      `SELECT COUNT(*) as total FROM servicios ${filtroTecnico}`,
+      params
     );
-    
-    // Servicios por estado
+
     const porEstadoResult = await pool.query(
-      `SELECT estado, COUNT(*) as cantidad 
-       FROM servicios 
-       GROUP BY estado 
-       ORDER BY cantidad DESC`
+      `SELECT estado, COUNT(*) as cantidad
+       FROM servicios
+       ${filtroTecnico}
+       GROUP BY estado
+       ORDER BY cantidad DESC`,
+      params
     );
-    
-    // Servicios por tipo
+
     const porTipoResult = await pool.query(
-      `SELECT tipo_servicio, COUNT(*) as cantidad 
-       FROM servicios 
-       GROUP BY tipo_servicio`
+      `SELECT tipo_servicio, COUNT(*) as cantidad
+       FROM servicios
+       ${filtroTecnico}
+       GROUP BY tipo_servicio`,
+      params
     );
-    
-    // Servicios por técnico
-    const porTecnicoResult = await pool.query(
-      `SELECT u.nombre, COUNT(s.id) as cantidad
-       FROM usuarios u
-       LEFT JOIN servicios s ON u.id = s.tecnico_asignado_id
-       WHERE u.rol = 'tecnico' AND u.activo = true
-       GROUP BY u.nombre
-       ORDER BY cantidad DESC`
-    );
-    
-    // Servicios pendientes de facturación (no facturados y no cerrados)
+
+    // Por técnico solo aplica para admin/recepción
+    const porTecnicoResult = esTecnico
+      ? { rows: [] }
+      : await pool.query(
+          `SELECT u.nombre, COUNT(s.id) as cantidad
+           FROM usuarios u
+           LEFT JOIN servicios s ON u.id = s.tecnico_asignado_id
+           WHERE u.rol = 'tecnico' AND u.activo = true
+           GROUP BY u.nombre
+           ORDER BY cantidad DESC`
+        );
+
     const pendientesFacturacionResult = await pool.query(
-      `SELECT COUNT(*) as cantidad 
-       FROM servicios 
-       WHERE facturado = false 
-         AND estado NOT IN ('cerrado', 'facturado')`
+      `SELECT COUNT(*) as cantidad
+       FROM servicios
+       WHERE facturado = false
+         AND estado NOT IN ('cerrado', 'facturado')
+         ${esTecnico ? 'AND tecnico_asignado_id = $1' : ''}`,
+      params
     );
-    
-    // Ingresos del mes actual (con facturas)
+
+    // Ingresos del mes (no aplica para técnicos)
     let ingresosMes = 0;
-    try {
-      const ingresosMesFactura = await pool.query(
-        `SELECT COALESCE(SUM(total), 0) as total
-         FROM facturas 
-         WHERE fecha_emision IS NOT NULL
-           AND EXTRACT(MONTH FROM fecha_emision) = EXTRACT(MONTH FROM CURRENT_DATE)
-           AND EXTRACT(YEAR FROM fecha_emision) = EXTRACT(YEAR FROM CURRENT_DATE)`
-      );
-      ingresosMes = parseFloat(ingresosMesFactura.rows[0].total);
-    } catch (e) {
-      // Si falla por tabla inexistente (antes de migración), fallback a servicios
-      const ingresosMesServicios = await pool.query(
-        `SELECT COALESCE(SUM(monto_facturado), 0) as total
-         FROM servicios 
-         WHERE facturado = true 
-         AND EXTRACT(MONTH FROM fecha_ingreso) = EXTRACT(MONTH FROM CURRENT_DATE)
-         AND EXTRACT(YEAR FROM fecha_ingreso) = EXTRACT(YEAR FROM CURRENT_DATE)`
-      );
-      ingresosMes = parseFloat(ingresosMesServicios.rows[0].total);
+    if (!esTecnico) {
+      try {
+        const ingresosMesFactura = await pool.query(
+          `SELECT COALESCE(SUM(total), 0) as total
+           FROM facturas
+           WHERE fecha_emision IS NOT NULL
+             AND EXTRACT(MONTH FROM fecha_emision) = EXTRACT(MONTH FROM CURRENT_DATE)
+             AND EXTRACT(YEAR FROM fecha_emision) = EXTRACT(YEAR FROM CURRENT_DATE)`
+        );
+        ingresosMes = parseFloat(ingresosMesFactura.rows[0].total);
+      } catch (e) {
+        const ingresosMesServicios = await pool.query(
+          `SELECT COALESCE(SUM(monto_facturado), 0) as total
+           FROM servicios
+           WHERE facturado = true
+             AND EXTRACT(MONTH FROM fecha_ingreso) = EXTRACT(MONTH FROM CURRENT_DATE)
+             AND EXTRACT(YEAR FROM fecha_ingreso) = EXTRACT(YEAR FROM CURRENT_DATE)`
+        );
+        ingresosMes = parseFloat(ingresosMesServicios.rows[0].total);
+      }
     }
-    
+
     res.json({
       total_servicios: totalResult.rows[0].total,
       por_estado: porEstadoResult.rows,
@@ -507,11 +517,11 @@ export const obtenerEstadisticas = async (req, res) => {
       pendientes_facturacion: pendientesFacturacionResult.rows[0].cantidad,
       ingresos_mes_actual: ingresosMes
     });
-    
+
   } catch (error) {
     console.error('Error obteniendo estadísticas:', error);
-    res.status(500).json({ 
-      error: 'Error al obtener estadísticas' 
+    res.status(500).json({
+      error: 'Error al obtener estadísticas'
     });
   }
 };

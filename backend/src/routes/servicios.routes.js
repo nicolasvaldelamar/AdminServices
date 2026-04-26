@@ -15,8 +15,8 @@ const router = express.Router();
 // Todas las rutas requieren autenticación
 router.use(verificarToken);
 
-// Estadísticas (admin y recepción)
-router.get('/estadisticas', verificarRol('administrador', 'recepcion'), obtenerEstadisticas);
+// Estadísticas (todos los roles; los técnicos reciben datos filtrados a sus servicios)
+router.get('/estadisticas', obtenerEstadisticas);
 
 // Listar y obtener (todos los roles, filtrado por rol en el controlador)
 router.get('/', listarServicios);
