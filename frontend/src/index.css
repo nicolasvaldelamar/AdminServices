@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply antialiased;
+  }
+  
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans;
+    font-family: 'Poppins', system-ui, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-600 to-primary-700 text-white px-5 py-2.5 rounded-xl hover:from-primary-700 hover:to-primary-800 transition-all duration-200 font-medium shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 active:scale-95;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-slate-700 px-5 py-2.5 rounded-xl hover:bg-slate-50 transition-all duration-200 font-medium border border-slate-200 shadow-sm hover:shadow-md active:scale-95;
+  }
+  
+  .btn-danger {
+    @apply bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-2.5 rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 font-medium shadow-lg shadow-red-500/30 active:scale-95;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200 bg-white placeholder:text-slate-400;
+  }
+  
+  .card {
+    @apply bg-white rounded-2xl shadow-card p-6 border border-slate-100 hover:shadow-soft transition-shadow duration-300;
+  }
+  
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium tracking-wide;
+  }
+  
+  .badge-success {
+    @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20;
+  }
+  
+  .badge-warning {
+    @apply bg-amber-50 text-amber-700 ring-1 ring-amber-600/20;
+  }
+  
+  .badge-danger {
+    @apply bg-red-50 text-red-700 ring-1 ring-red-600/20;
+  }
+  
+  .badge-info {
+    @apply bg-sky-50 text-sky-700 ring-1 ring-sky-600/20;
+  }
+  
+  .badge-gray {
+    @apply bg-slate-50 text-slate-700 ring-1 ring-slate-600/20;
+  }
+  
+  .stat-card {
+    @apply card hover:scale-105 transition-transform duration-300 cursor-pointer;
+  }
+  
+  .gradient-bg {
+    @apply bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900;
+  }
+}
