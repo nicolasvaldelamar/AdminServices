@@ -118,7 +118,7 @@ export const crearUsuario = async (req, res) => {
 export const actualizarUsuario = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, email, rol, telefono, activo } = req.body;
+    const { nombre, email, rol, telefono, activo, password } = req.body;
     
     // Verificar que el usuario existe
     const usuarioExiste = await pool.query(
@@ -180,7 +180,19 @@ export const actualizarUsuario = async (req, res) => {
       campos.push(`activo = $${contador++}`);
       valores.push(activo);
     }
-    
+
+    if (password) {
+      if (password.length < 6) {
+        return res.status(400).json({
+          error: 'La contraseña debe tener al menos 6 caracteres'
+        });
+      }
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash(password, salt);
+      campos.push(`password = $${contador++}`);
+      valores.push(passwordHash);
+    }
+
     if (campos.length === 0) {
       return res.status(400).json({ 
         error: 'No se proporcionaron campos para actualizar' 

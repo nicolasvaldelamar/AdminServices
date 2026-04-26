@@ -34,10 +34,12 @@ export default function UsuarioForm() {
   const onSubmit = async (data) => {
     setLoading(true)
     setError('')
-    
+
     try {
       if (esEdicion) {
-        delete data.password
+        if (!data.password) {
+          delete data.password
+        }
         await api.put(`/usuarios/${id}`, data)
       } else {
         await api.post('/usuarios', data)
@@ -98,25 +100,31 @@ export default function UsuarioForm() {
             )}
           </div>
           
-          {!esEdicion && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Contraseña *
-              </label>
-              <input
-                type="password"
-                {...register('password', { 
-                  required: 'Este campo es requerido',
-                  minLength: { value: 6, message: 'Mínimo 6 caracteres' }
-                })}
-                className="input-field"
-                placeholder="••••••••"
-              />
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-              )}
-            </div>
-          )}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {esEdicion ? 'Nueva contraseña' : 'Contraseña *'}
+            </label>
+            <input
+              type="password"
+              autoComplete="new-password"
+              {...register('password', esEdicion ? {
+                minLength: { value: 6, message: 'Mínimo 6 caracteres' }
+              } : {
+                required: 'Este campo es requerido',
+                minLength: { value: 6, message: 'Mínimo 6 caracteres' }
+              })}
+              className="input-field"
+              placeholder={esEdicion ? 'Dejar vacío para no cambiar' : '••••••••'}
+            />
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+            )}
+            {esEdicion && (
+              <p className="mt-1 text-xs text-gray-500">
+                Solo completa este campo si quieres cambiar la contraseña del usuario.
+              </p>
+            )}
+          </div>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
